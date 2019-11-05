@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { body, validationResult } = require('express-validator/check');
+const { body, validationResult } = require('express-validator');
+const path = require('path');
 
-const Post = require('../database/models/Post');
+const Post = require('../models/Post');
 
 router.get('/', async (req, res) => {
     const posts = await Post.find({});
@@ -29,6 +30,16 @@ router.post(
     async (req, res) => {
         const errors = await validationResult(req);
         if (errors.isEmpty()) {
+            if (req.files) {
+                const { image } = req.files;
+                await image.mv(
+                    path.join(__dirname, '../public/posts', image.name),
+                );
+                await Post.create({
+                    ...req.body,
+                    image: `/posts/${image.name}`,
+                });
+            }
             await Post.create(req.body);
             res.redirect('/');
         } else {
