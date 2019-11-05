@@ -1,30 +1,29 @@
 {
     "name": "learn-express",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node ./bin/www",
+        "dev": "DEBUG=learn-express:* nodemon ./bin/www"
+    },
     "prettier": {
         "trailingComma": "all",
         "tabWidth": 4,
         "semi": true,
         "singleQuote": true
     },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "nodemon server.js"
-    },
-    "author": "",
-    "license": "ISC",
     "dependencies": {
-        "body-parser": "^1.19.0",
+        "cookie-parser": "~1.4.4",
+        "debug": "~4.1.1",
         "dotenv": "^8.2.0",
         "eslint": "^6.6.0",
         "express": "^4.17.1",
-        "express-fileupload": "^1.1.6-alpha.6",
-        "express-upload": "^0.1.0",
-        "express-validator": "^6.2.0",
+        "http-errors": "~1.7.3",
         "mongoose": "^5.7.7",
-        "nodemon": "^1.19.4",
-        "pug": "^2.0.4"
+        "morgan": "~1.9.1",
+        "pug": "2.0.4"
+    },
+    "devDependencies": {
+        "nodemon": "^1.19.4"
     }
 }

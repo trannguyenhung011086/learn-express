@@ -1,9 +1,0 @@
-extends layout
-
-block content
-    - var image = data.image;
-    img(src=image)
-    h3 Post title: #{data.title}
-    h4 Post description: #{data.description}
-    p Post content: #{data.content}
-    p Created time: #{data.createdAt}
