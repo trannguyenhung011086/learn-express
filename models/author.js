@@ -6,14 +6,6 @@ const AuthorSchema = new mongoose.Schema({
     lastName: { type: String, required: true, max: 100 },
     dateOfBirth: { type: Date },
     dateOfDeath: { type: Date },
-    books: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: true,
-            ref: 'Book',
-            default: null,
-        },
-    ],
 });
 
 AuthorSchema.virtual('fullName').get(function() {
@@ -30,10 +22,6 @@ AuthorSchema.virtual('lifeSpan').get(function() {
 
 AuthorSchema.virtual('url').get(function() {
     return '/catalog/author/' + this._id;
-});
-
-AuthorSchema.virtual('products').get(function() {
-    return this.books.map(book => '/catalog/book/' + book._id);
 });
 
 module.exports = mongoose.model('Author', AuthorSchema);

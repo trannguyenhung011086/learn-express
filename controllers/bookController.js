@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Book = require('../models/book');
 const Author = require('../models/author');
 const Genre = require('../models/genre');
@@ -36,7 +37,7 @@ module.exports = {
     },
     bookList: async (req, res, next) => {
         try {
-            const bookList = await Book.find({}, 'title author')
+            const bookList = await Book.find({})
                 .populate('author')
                 .exec();
             res.render('bookList', { title: 'Book List', bookList });
@@ -44,8 +45,28 @@ module.exports = {
             next(err);
         }
     },
-    bookDetails: (req, res) => {
-        res.send('TODO: book details');
+    bookDetails: async (req, res, next) => {
+        const id = mongoose.Schema.Types.ObjectId(req.params.id);
+        try {
+            const book = await Book.findById(id)
+                .populate('author')
+                .populate('genre')
+                .exec();
+            if (!book) {
+                res.status(404).send('Book not found!');
+                return;
+            }
+            const bookInstances = await BookInstance.find({
+                book: id,
+            }).exec();
+            res.render('bookDetails', {
+                title: 'Book Details',
+                book,
+                bookInstances,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
     bookCreateGet: (req, res) => {
         res.send('TODO: book create GET');

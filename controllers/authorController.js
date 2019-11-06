@@ -1,4 +1,6 @@
+const mongoose = require('mongoose');
 const Author = require('../models/author');
+const Book = require('../models/book');
 
 module.exports = {
     authorList: async (req, res, next) => {
@@ -11,8 +13,23 @@ module.exports = {
             next(err);
         }
     },
-    authorDetails: (req, res) => {
-        res.send('TODO: author details ' + req.params.id);
+    authorDetails: async (req, res, next) => {
+        const id = mongoose.Schema.Types.ObjectId(req.params.id);
+        try {
+            const author = await Author.findById(id).exec();
+            if (!author) {
+                res.status(404).send('Author not found!');
+                return;
+            }
+            const books = await Book.find({ author: id }).exec();
+            res.render('authorDetails', {
+                title: 'Author Details',
+                author,
+                books,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
     authorCreateGet: (req, res) => {
         res.send('TODO: author create GET');

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const BookInstance = require('../models/bookInstance');
 
 module.exports = {
@@ -14,8 +15,23 @@ module.exports = {
             next(err);
         }
     },
-    bookInstanceDetails: (req, res) => {
-        res.send('TODO: book instance details ' + req.params.id);
+    bookInstanceDetails: async (req, res, next) => {
+        const id = mongoose.Schema.Types.ObjectId(req.params.id);
+        try {
+            const bookInstance = await BookInstance.findById(id)
+                .populate('book')
+                .exec();
+            if (!bookInstance) {
+                res.status(404).send('Book copy not found!');
+                return;
+            }
+            res.render('bookInstanceDetails', {
+                title: `Copy: ${bookInstance.book.title}`,
+                bookInstance,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
     bookInstanceCreateGet: (req, res) => {
         res.send('TODO: book instance create GET');

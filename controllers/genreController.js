@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+const Book = require('../models/book');
 const Genre = require('../models/genre');
 
 module.exports = {
@@ -11,8 +13,23 @@ module.exports = {
             next(err);
         }
     },
-    genreDetails: (req, res) => {
-        res.send('TODO: genre details ' + req.params.id);
+    genreDetails: async (req, res, next) => {
+        const id = mongoose.Schema.Types.ObjectId(req.params.id);
+        try {
+            const genre = await Genre.findById(id).exec();
+            if (!genre) {
+                res.status(404).send('Genre not found!');
+                return;
+            }
+            const genreBooks = await Book.find({ genre: id }).exec();
+            res.render('genreDetails', {
+                title: 'Genre Details',
+                genre,
+                genreBooks,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
     genreCreateGet: (req, res) => {
         res.send('TODO: genre create GET');
