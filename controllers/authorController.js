@@ -1,8 +1,15 @@
 const Author = require('../models/author');
 
 module.exports = {
-    authorList: (req, res) => {
-        res.send('TODO: author list');
+    authorList: async (req, res, next) => {
+        try {
+            const authorList = await Author.find({})
+                .sort([['firstName', 'ascending']])
+                .exec();
+            res.render('authorList', { title: 'Author List', authorList });
+        } catch (err) {
+            next(err);
+        }
     },
     authorDetails: (req, res) => {
         res.send('TODO: author details ' + req.params.id);

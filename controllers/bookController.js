@@ -5,35 +5,47 @@ const BookInstance = require('../models/bookInstance');
 
 module.exports = {
     index: async (req, res) => {
-        const [
-            bookCount,
-            bookInstanceCount,
-            bookInstanceAvailableCount,
-            authorCount,
-            genreCount,
-        ] = await Promise.all([
-            Book.countDocuments({}),
-            BookInstance.countDocuments({}),
-            BookInstance.countDocuments({ status: 'available' }),
-            Author.countDocuments({}),
-            Genre.countDocuments({}),
-        ]);
-        res.render('index', {
-            title: 'Local Library Home',
-            data: {
-                bookCount,
-                bookInstanceCount,
-                bookInstanceAvailableCount,
-                authorCount,
-                genreCount,
-            },
-        });
+        try {
+            const bookCount = await Book.countDocuments({}).exec();
+            const bookInstanceCount = await BookInstance.countDocuments(
+                {},
+            ).exec();
+            const bookInstanceAvailableCount = await BookInstance.countDocuments(
+                { status: 'available' },
+            ).exec();
+            const authorCount = await Author.countDocuments({}).exec();
+            const genreCount = await Genre.countDocuments({}).exec();
+
+            res.render('index', {
+                title: 'Local Library Home',
+                data: {
+                    bookCount,
+                    bookInstanceCount,
+                    bookInstanceAvailableCount,
+                    authorCount,
+                    genreCount,
+                },
+            });
+        } catch (err) {
+            console.log(err);
+            return res.render('index', {
+                title: 'Local Library Home',
+                error: err,
+            });
+        }
     },
-    bookList: (req, res) => {
-        res.send('TODO: book list');
+    bookList: async (req, res, next) => {
+        try {
+            const bookList = await Book.find({}, 'title author')
+                .populate('author')
+                .exec();
+            res.render('bookList', { title: 'Book List', bookList });
+        } catch (err) {
+            next(err);
+        }
     },
     bookDetails: (req, res) => {
-        res.send('TODO: book details ' + req.params.id);
+        res.send('TODO: book details');
     },
     bookCreateGet: (req, res) => {
         res.send('TODO: book create GET');

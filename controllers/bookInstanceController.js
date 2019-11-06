@@ -1,8 +1,18 @@
 const BookInstance = require('../models/bookInstance');
 
 module.exports = {
-    bookInstanceList: (req, res) => {
-        res.send('TODO: book instance list');
+    bookInstanceList: async (req, res, next) => {
+        try {
+            const listBookInstance = await BookInstance.find({})
+                .populate('book')
+                .exec();
+            res.render('bookInstanceList', {
+                title: 'Book Instance List',
+                bookInstanceList: listBookInstance,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
     bookInstanceDetails: (req, res) => {
         res.send('TODO: book instance details ' + req.params.id);
