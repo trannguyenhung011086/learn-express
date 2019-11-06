@@ -3,7 +3,7 @@ const Book = require('../models/book');
 const Genre = require('../models/genre');
 
 module.exports = {
-    genreList: async (req, res, next) => {
+    getList: async (req, res, next) => {
         try {
             const genreList = await Genre.find({})
                 .sort([['name', 'ascending']])
@@ -13,7 +13,7 @@ module.exports = {
             next(err);
         }
     },
-    genreDetails: async (req, res, next) => {
+    getDetails: async (req, res, next) => {
         const id = mongoose.Schema.Types.ObjectId(req.params.id);
         try {
             const genre = await Genre.findById(id).exec();
@@ -31,22 +31,22 @@ module.exports = {
             next(err);
         }
     },
-    genreCreateGet: (req, res) => {
+    getCreate: (req, res) => {
         res.send('TODO: genre create GET');
     },
-    genreCreatePost: (req, res) => {
+    postCreate: (req, res) => {
         res.send('TODO: genre create POST');
     },
-    genreDeleteGet: (req, res) => {
+    getDelete: (req, res) => {
         res.send('TODO: genre delete GET');
     },
-    genreDeletePost: (req, res) => {
+    postDelete: (req, res) => {
         res.send('TODO: genre delete POST');
     },
-    genreUpdateGet: (req, res) => {
+    getUpdate: (req, res) => {
         res.send('TODO: genre update GET');
     },
-    genreUpdatePost: (req, res) => {
+    postUpdate: (req, res) => {
         res.send('TODO: genre update POST');
     },
 };

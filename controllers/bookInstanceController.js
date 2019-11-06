@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const BookInstance = require('../models/bookInstance');
 
 module.exports = {
-    bookInstanceList: async (req, res, next) => {
+    getList: async (req, res, next) => {
         try {
             const listBookInstance = await BookInstance.find({})
                 .populate('book')
@@ -15,7 +15,7 @@ module.exports = {
             next(err);
         }
     },
-    bookInstanceDetails: async (req, res, next) => {
+    getDetails: async (req, res, next) => {
         const id = mongoose.Schema.Types.ObjectId(req.params.id);
         try {
             const bookInstance = await BookInstance.findById(id)
@@ -33,22 +33,22 @@ module.exports = {
             next(err);
         }
     },
-    bookInstanceCreateGet: (req, res) => {
+    getCreate: (req, res) => {
         res.send('TODO: book instance create GET');
     },
-    bookInstanceCreatePost: (req, res) => {
+    postCreate: (req, res) => {
         res.send('TODO: book instance create POST');
     },
-    bookInstanceDeleteGet: (req, res) => {
+    getDelete: (req, res) => {
         res.send('TODO: book instance delete GET');
     },
-    bookInstanceDeletePost: (req, res) => {
+    postDelete: (req, res) => {
         res.send('TODO: book instance delete POST');
     },
-    bookInstanceUpdateGet: (req, res) => {
+    getUpdate: (req, res) => {
         res.send('TODO: book instance update GET');
     },
-    bookInstanceUpdatePost: (req, res) => {
+    postUpdate: (req, res) => {
         res.send('TODO: book instance update POST');
     },
 };

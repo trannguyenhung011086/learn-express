@@ -35,7 +35,7 @@ module.exports = {
             });
         }
     },
-    bookList: async (req, res, next) => {
+    getList: async (req, res, next) => {
         try {
             const bookList = await Book.find({})
                 .populate('author')
@@ -45,7 +45,7 @@ module.exports = {
             next(err);
         }
     },
-    bookDetails: async (req, res, next) => {
+    getDetails: async (req, res, next) => {
         const id = mongoose.Schema.Types.ObjectId(req.params.id);
         try {
             const book = await Book.findById(id)
@@ -68,22 +68,22 @@ module.exports = {
             next(err);
         }
     },
-    bookCreateGet: (req, res) => {
+    getCreate: (req, res) => {
         res.send('TODO: book create GET');
     },
-    bookCreatePost: (req, res) => {
+    postCreate: (req, res) => {
         res.send('TODO: book create POST');
     },
-    bookDeleteGet: (req, res) => {
+    getDelete: (req, res) => {
         res.send('TODO: book delete GET');
     },
-    bookDeletePost: (req, res) => {
+    postDelete: (req, res) => {
         res.send('TODO: book delete POST');
     },
-    bookUpdateGet: (req, res) => {
+    getUpdate: (req, res) => {
         res.send('TODO: book update GET');
     },
-    bookUpdatePost: (req, res) => {
+    postUpdate: (req, res) => {
         res.send('TODO: book update POST');
     },
 };

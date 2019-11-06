@@ -3,7 +3,7 @@ const Author = require('../models/author');
 const Book = require('../models/book');
 
 module.exports = {
-    authorList: async (req, res, next) => {
+    getList: async (req, res, next) => {
         try {
             const authorList = await Author.find({})
                 .sort([['firstName', 'ascending']])
@@ -13,7 +13,7 @@ module.exports = {
             next(err);
         }
     },
-    authorDetails: async (req, res, next) => {
+    getDetails: async (req, res, next) => {
         const id = mongoose.Schema.Types.ObjectId(req.params.id);
         try {
             const author = await Author.findById(id).exec();
@@ -31,22 +31,22 @@ module.exports = {
             next(err);
         }
     },
-    authorCreateGet: (req, res) => {
+    getCreate: (req, res) => {
         res.send('TODO: author create GET');
     },
-    authorCreatePost: (req, res) => {
+    postCreate: (req, res) => {
         res.send('TODO: author create POST');
     },
-    authorDeleteGet: (req, res) => {
+    getDelete: (req, res) => {
         res.send('TODO: author delete GET');
     },
-    authorDeletePost: (req, res) => {
+    postDelete: (req, res) => {
         res.send('TODO: author delete POST');
     },
-    authorUpdateGet: (req, res) => {
+    getUpdate: (req, res) => {
         res.send('TODO: author update GET');
     },
-    authorUpdatePost: (req, res) => {
+    postUpdate: (req, res) => {
         res.send('TODO: author update POST');
     },
 };
