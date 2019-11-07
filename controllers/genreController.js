@@ -33,9 +33,10 @@ module.exports = {
         }
     },
     getCreate: (req, res) => {
-        res.render('genreForm', { title: 'Genre Form' });
+        res.render('genreForm', { title: 'Genre Form', genre: req.body });
     },
     postCreate: async (req, res, next) => {
+        const body = req.body;
         try {
             const schema = yup.object().shape({
                 name: yup
@@ -51,25 +52,25 @@ module.exports = {
             });
 
             try {
-                await schema.validate(req.body);
+                await schema.validate(body);
             } catch (err) {
                 res.render('genreForm', {
                     title: 'Genre Form',
-                    genre: req.body.name,
+                    genre: body.name,
                     errors: err.errors,
                 });
                 return;
             }
 
             const genre = await Genre.findOne({
-                name: req.body.name.trim(),
+                name: body.name.trim(),
             }).exec();
 
             if (genre) {
                 res.redirect(genre.url);
             } else {
                 const newGenre = await Genre.create({
-                    name: req.body.name.toLowerCase(),
+                    name: body.name.toLowerCase(),
                 });
                 res.redirect(newGenre.url);
             }

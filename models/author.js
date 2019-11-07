@@ -13,11 +13,13 @@ AuthorSchema.virtual('fullName').get(function() {
 });
 
 AuthorSchema.virtual('lifeSpan').get(function() {
-    return this.dateOfBirth
+    const birth = this.dateOfBirth
         ? moment(this.dateOfBirth).format('YYYY-MM-DD')
-        : '' - this.dateOfDeath
+        : '';
+    const death = this.dateOfDeath
         ? moment(this.dateOfDeath).format('YYYY-MM-DD')
         : '';
+    return birth + ' - ' + death;
 });
 
 AuthorSchema.virtual('url').get(function() {
