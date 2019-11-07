@@ -5,6 +5,8 @@ const GenreSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: [
+            'poetry',
+            'fantasy',
             'fiction',
             'non-fiction',
             'romance',

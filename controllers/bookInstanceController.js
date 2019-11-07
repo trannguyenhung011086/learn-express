@@ -16,7 +16,7 @@ module.exports = {
         }
     },
     getDetails: async (req, res, next) => {
-        const id = mongoose.Schema.Types.ObjectId(req.params.id);
+        const id = mongoose.Types.ObjectId(req.params.id);
         try {
             const bookInstance = await BookInstance.findById(id)
                 .populate('book')
