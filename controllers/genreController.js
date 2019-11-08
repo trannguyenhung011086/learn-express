@@ -87,10 +87,47 @@ module.exports = {
     postDelete: (req, res) => {
         res.send('TODO: genre delete POST');
     },
-    getUpdate: (req, res) => {
-        res.send('TODO: genre update GET');
+    getUpdate: async (req, res, next) => {
+        try {
+            const genre = await Genre.findById(req.params.id).exec();
+            res.render('genreForm', { title: 'Genre Form', genre });
+        } catch (err) {
+            next(err);
+        }
     },
-    postUpdate: (req, res) => {
-        res.send('TODO: genre update POST');
+    postUpdate: async (req, res, next) => {
+        try {
+            const schema = yup.object().shape({
+                name: yup
+                    .string()
+                    .trim()
+                    .lowercase()
+                    .min(3)
+                    .max(100)
+                    .matches(
+                        /poetry|fantasy|fiction|romance|horror|history|textbook/,
+                    )
+                    .required(),
+            });
+
+            try {
+                await schema.validate(req.body);
+            } catch (err) {
+                res.render('genreForm', {
+                    title: 'Genre Form',
+                    genre: req.body.name,
+                    errors: err.errors,
+                });
+                return;
+            }
+
+            const updatedGenre = await Genre.findByIdAndUpdate(
+                req.params.id,
+                req.body,
+            ).exec();
+            res.redirect(updatedGenre.url);
+        } catch (err) {
+            next(err);
+        }
     },
 };

@@ -158,7 +158,7 @@ module.exports = {
                 req.params.id,
                 req.body,
             ).exec();
-            res.redirect('/catalog/authors');
+            res.redirect(updatedAuthor.url);
         } catch (err) {
             next(err);
         }
