@@ -47,10 +47,10 @@ module.exports = {
         }
     },
     postCreate: async (req, res, next) => {
-        const body = req.body;
-        const books = await Book.find({}).exec();
-
         try {
+            const body = req.body;
+            const books = await Book.find({}).exec();
+
             const schema = yup.object().shape({
                 book: yup.string().required(),
                 imprint: yup.string().required(),
@@ -81,11 +81,45 @@ module.exports = {
             next(err);
         }
     },
-    getDelete: (req, res) => {
-        res.send('TODO: book instance delete GET');
+    getDelete: async (req, res, next) => {
+        try {
+            const bookInstance = await BookInstance.findById(req.params.id)
+                .populate('book')
+                .exec();
+            if (!bookInstance) {
+                res.status(404).send('Book copy not found!');
+                return;
+            }
+            res.render('bookInstanceDelete', {
+                title: 'Book Instance Delete',
+                bookInstance,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
-    postDelete: (req, res) => {
-        res.send('TODO: book instance delete POST');
+    postDelete: async (req, res, next) => {
+        try {
+            const bookInstance = await BookInstance.findById(req.params.id)
+                .populate('book')
+                .exec();
+            if (
+                bookInstance.status === 'available' ||
+                bookInstance.status === 'maintenance'
+            ) {
+                await BookInstance.findByIdAndRemove(req.params.id).exec();
+                res.redirect('/catalog/bookinstances');
+            } else {
+                res.render('bookInstanceDelete', {
+                    title: 'Book Instance Delete',
+                    bookInstance,
+                    error:
+                        'Can only delete copy with status Available or Maintenance!',
+                });
+            }
+        } catch (err) {
+            next(err);
+        }
     },
     getUpdate: (req, res) => {
         res.send('TODO: book instance update GET');

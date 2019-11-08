@@ -18,3 +18,6 @@ block content
       
   if bookInstance.status!='available'
     p #[strong Due back:] #{bookInstance.dueBackFormatted}
+
+  p
+    a(href=bookInstance.url + '/delete') Delete Copy

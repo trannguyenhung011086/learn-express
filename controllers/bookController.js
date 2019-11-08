@@ -134,11 +134,48 @@ module.exports = {
             next(err);
         }
     },
-    getDelete: (req, res) => {
-        res.send('TODO: book delete GET');
+    getDelete: async (req, res, next) => {
+        try {
+            const book = await Book.findById(req.params.id)
+                .populate('author')
+                .exec();
+            if (!book) {
+                res.status(404).send('Book not found!');
+                return;
+            }
+            const bookInstances = await BookInstance.find({
+                book: req.params.id,
+            }).exec();
+            res.render('bookDelete', {
+                title: 'Book Delete',
+                book,
+                bookInstances,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
-    postDelete: (req, res) => {
-        res.send('TODO: book delete POST');
+    postDelete: async (req, res, next) => {
+        try {
+            const book = await Book.findById(req.params.id)
+                .populate('author')
+                .exec();
+            const bookInstances = await BookInstance.find({
+                book: req.params.id,
+            }).exec();
+            if (bookInstances.length > 0) {
+                res.render('bookDelete', {
+                    title: 'Book Delete',
+                    book,
+                    bookInstances,
+                });
+            }
+
+            await Book.findByIdAndRemove(req.params.id).exec();
+            res.redirect('/catalog/books');
+        } catch (err) {
+            next(err);
+        }
     },
     getUpdate: async (req, res, next) => {
         try {
