@@ -88,6 +88,9 @@ module.exports = {
             if (body.genre === undefined) {
                 body.genre = [];
             }
+            if (!Array.isArray(body.genre)) {
+                body.genre = new Array(body.genre);
+            }
 
             const authors = await Author.find({}).exec();
             const genres = await Genre.find({}).exec();
@@ -100,7 +103,7 @@ module.exports = {
                 genre: yup
                     .array()
                     .min(1)
-                    .of(yup.string().required()),
+                    .of(yup.string()),
             });
             try {
                 await schema.validate(body);
@@ -113,12 +116,6 @@ module.exports = {
                 });
                 return;
             }
-
-            // for (let i = 0; i < genres.length; i++) {
-            //     if (body.genre.includes(genres[i]._id)) {
-            //         genres[i].checked = true;
-            //     }
-            // }
 
             const book = await Book.findOne({
                 title: body.title.trim(),
@@ -143,10 +140,89 @@ module.exports = {
     postDelete: (req, res) => {
         res.send('TODO: book delete POST');
     },
-    getUpdate: (req, res) => {
-        res.send('TODO: book update GET');
+    getUpdate: async (req, res, next) => {
+        try {
+            const book = await Book.findById(req.params.id)
+                .populate('author')
+                .populate('genre')
+                .exec();
+            if (!book) {
+                res.status(404).send('Book not found!');
+                return;
+            }
+
+            const authors = await Author.find({}).exec();
+            const genres = await Genre.find({}).exec();
+
+            for (const genre of genres) {
+                for (const bookGenre of book.genre) {
+                    if (genre._id.toString() === bookGenre._id.toString()) {
+                        genre.checked = true;
+                    }
+                }
+            }
+
+            res.render('bookForm', {
+                title: 'Book Update',
+                book,
+                authors,
+                genres,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
-    postUpdate: (req, res) => {
-        res.send('TODO: book update POST');
+    postUpdate: async (req, res, next) => {
+        const body = req.body;
+        try {
+            if (body.genre === undefined) {
+                body.genre = [];
+            }
+            if (!Array.isArray(body.genre)) {
+                body.genre = new Array(body.genre);
+            }
+
+            const authors = await Author.find({}).exec();
+            const genres = await Genre.find({}).exec();
+
+            const schema = yup.object().shape({
+                title: yup.string().required(),
+                author: yup.string().required(),
+                summary: yup.string().required(),
+                isbn: yup.string().required(),
+                genre: yup
+                    .array()
+                    .min(1)
+                    .of(yup.string()),
+            });
+
+            try {
+                await schema.validate(body);
+            } catch (err) {
+                for (const genre of genres) {
+                    for (const bookGenre of body.genre) {
+                        if (genre._id.toString() === bookGenre._id.toString()) {
+                            genre.checked = true;
+                        }
+                    }
+                }
+
+                res.render('bookForm', {
+                    title: 'Book Update',
+                    authors,
+                    genres,
+                    book: body,
+                    errors: err.errors,
+                });
+            }
+
+            const updatedBook = await Book.findByIdAndUpdate(
+                req.params.id,
+                body,
+            ).exec();
+            res.redirect(updatedBook.url);
+        } catch (err) {
+            next(err);
+        }
     },
 };
