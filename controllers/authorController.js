@@ -82,11 +82,40 @@ module.exports = {
             next(err);
         }
     },
-    getDelete: (req, res) => {
-        res.send('TODO: author delete GET');
+    getDelete: async (req, res, next) => {
+        try {
+            const author = await Author.findById(req.params.id).exec();
+            if (!author) {
+                res.redirect('/catalog/authors');
+            }
+            const books = await Book.find({ author: req.params.id }).exec();
+            res.render('authorDelete', {
+                title: 'Author Delete',
+                author,
+                books,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
-    postDelete: (req, res) => {
-        res.send('TODO: author delete POST');
+    postDelete: async (req, res, next) => {
+        try {
+            const author = await Author.findById(req.params.id).exec();
+            const books = await Book.find({ author: req.params.id }).exec();
+
+            if (books.length > 0) {
+                res.render('authorDelete', {
+                    title: 'Author Delete',
+                    author,
+                    books,
+                });
+            }
+
+            await Author.findByIdAndRemove(req.params.id).exec();
+            res.redirect('/catalog/authors');
+        } catch (err) {
+            next(err);
+        }
     },
     getUpdate: (req, res) => {
         res.send('TODO: author update GET');
