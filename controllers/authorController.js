@@ -117,10 +117,50 @@ module.exports = {
             next(err);
         }
     },
-    getUpdate: (req, res) => {
-        res.send('TODO: author update GET');
+    getUpdate: async (req, res, next) => {
+        try {
+            const author = await Author.findById(req.params.id).exec();
+            res.render('authorForm', {
+                title: 'Author Form',
+                author,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
-    postUpdate: (req, res) => {
-        res.send('TODO: author update POST');
+    postUpdate: async (req, res, next) => {
+        try {
+            const schema = yup.object().shape({
+                firstName: yup
+                    .string()
+                    .trim()
+                    .max(100)
+                    .required(),
+                lastName: yup
+                    .string()
+                    .trim()
+                    .max(100)
+                    .required(),
+                dateOfBirth: yup.date(),
+                dateOfDeath: yup.date(),
+            });
+            try {
+                await schema.validate(req.body);
+            } catch (err) {
+                res.render('authorForm', {
+                    title: 'Author Form',
+                    author: req.body,
+                    errors: err.errors,
+                });
+            }
+
+            const updatedAuthor = await Author.findByIdAndUpdate(
+                req.params.id,
+                req.body,
+            ).exec();
+            res.redirect('/catalog/authors');
+        } catch (err) {
+            next(err);
+        }
     },
 };

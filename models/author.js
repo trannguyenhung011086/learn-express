@@ -22,6 +22,14 @@ AuthorSchema.virtual('lifeSpan').get(function() {
     return birth + ' - ' + death;
 });
 
+AuthorSchema.virtual('birth').get(function() {
+    return moment(this.dateOfBirth).format('YYYY-MM-DD');
+});
+
+AuthorSchema.virtual('death').get(function() {
+    return moment(this.dateOfDeath).format('YYYY-MM-DD');
+});
+
 AuthorSchema.virtual('url').get(function() {
     return '/catalog/author/' + this._id;
 });
