@@ -81,11 +81,59 @@ module.exports = {
             next(err);
         }
     },
-    getDelete: (req, res) => {
-        res.send('TODO: genre delete GET');
+    getDelete: async (req, res, next) => {
+        try {
+            const genre = await Genre.findById(req.params.id).exec();
+            if (!genre) {
+                res.status(404).send('Genre not found!');
+            }
+            const books = await Book.find({}).exec();
+
+            let usedBooks = [];
+            for (const book of books) {
+                for (const genreBook of book.genre) {
+                    if (genreBook.toString() === genre._id.toString()) {
+                        usedBooks.push(book);
+                    }
+                }
+            }
+
+            res.render('genreDelete', {
+                title: 'Genre Delete',
+                genre,
+                usedBooks,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
-    postDelete: (req, res) => {
-        res.send('TODO: genre delete POST');
+    postDelete: async (req, res, next) => {
+        try {
+            const genre = await Genre.findById(req.params.id).exec();
+            const books = await Book.find({}).exec();
+
+            let usedBooks = [];
+            for (const book of books) {
+                for (const genreBook of book.genre) {
+                    if (genreBook.toString() === genre._id.toString()) {
+                        usedBooks.push(book);
+                    }
+                }
+            }
+
+            if (usedBooks.length > 0) {
+                res.render('genreDelete', {
+                    title: 'Genre Delete',
+                    genre,
+                    usedBooks,
+                });
+            }
+
+            await Genre.findByIdAndRemove(req.params.id).exec();
+            res.redirect('/catalog/genres');
+        } catch (err) {
+            next(err);
+        }
     },
     getUpdate: async (req, res, next) => {
         try {
