@@ -2,14 +2,38 @@ extends layout
 
 block content
 
-  h1 User: #{user.fullName}
+  if update
+    form(method='POST' action='')
+    div.form-group
+      label(for='firstName') First Name:
+      input#firstName.form-control(type='text' placeholder='First name' name='firstName' required=true value=user.firstName )
+      label(for='lastName') Last Name:
+      input#lastName.form-control(type='text' placeholder='Last name' name='lastName' required=true value=user.lastName)
+      label(for='email') Email:
+      input#email.form-control(type='email' placeholder='Email' name='email' required=true value=user.email )
+      label(for='password') Password:
+      input#password.form-control(type='password' placeholder='Password' name='password' required=true value=user.password )
+    button.btn.btn-primary(type='submit') Submit
+  if errors 
+    ul
+      each error in errors
+        li!= error
   
-  div(style='margin-left:20px;margin-top:20px')
-
-    h4 Info
+  else
+    h1 User: #{user.fullName}
     
-    p Email: #{user.email}
+    div(style='margin-left:20px;margin-top:20px')
 
-    hr
-    p 
-      a(href=user.url + '/update') Update user
+      h4 Info
+      
+      p Email: #{user.email}
+      p Role: #{user.permissionLevel}
+
+      hr
+      p 
+        a(href=user.url + '/update') Update account
+      p 
+        a(href=user.url + '/delete') Delete account
+
+      form(method='POST' action=user.url + '/logout')
+        button.btn.btn-primary(type='submit') Logout

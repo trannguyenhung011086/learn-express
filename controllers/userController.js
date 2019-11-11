@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const yup = require('yup');
 const User = require('../models/user');
@@ -46,7 +47,15 @@ module.exports = {
             const user = await User.findOne({
                 email: req.body.email.toLowerCase(),
             }).exec();
+
             if (!user) {
+                const salt = crypto.randomBytes(16).toString('base64');
+                const hash = crypto
+                    .createHmac('sha512', salt)
+                    .update(req.body.password)
+                    .digest('base64');
+                req.body.password = salt + '$' + hash;
+
                 const newUser = await User.create(req.body);
                 res.redirect(newUser.url);
             } else {
@@ -96,11 +105,29 @@ module.exports = {
         }
     },
 
-    getUpdate: (req, res) => {
-        res.send('TODO: get user update');
+    getUpdate: async (req, res, next) => {
+        try {
+            const id = mongoose.Types.ObjectId(req.params.id);
+            const user = await User.findById(id).exec();
+            res.render('userDetails', {
+                title: 'User Details',
+                user,
+                update: true,
+            });
+        } catch (err) {
+            next(err);
+        }
     },
 
     postUpdate: (req, res) => {
         res.send('TODO: post user update');
+    },
+
+    getDelete: (req, res) => {
+        res.send('TODO: get user delete');
+    },
+
+    postDelete: (req, res) => {
+        res.send('TODO: post user delete');
     },
 };
