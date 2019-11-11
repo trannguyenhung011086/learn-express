@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h1=title
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='email') Email:
+      input#email.form-control(type='email' placeholder='Email' name='email' required=true value=user.email )
+      label(for='password') Password:
+      input#password.form-control(type='password' placeholder='Password' name='password' required=true value=user.password )
+    button.btn.btn-primary(type='submit') Submit
+  if errors 
+    ul
+      each error in errors
+        li!= error
+  hr
+  p 
+    a(href='/user/register') Create new account
+  p 
+    a(href='/user/forgotpassword') Forgot your account?
