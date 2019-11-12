@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const yup = require('yup');
 const User = require('../models/user');
+const UserService = require('../services/userService');
 
 module.exports = {
     index: (req, res) => {
@@ -15,56 +16,26 @@ module.exports = {
 
     postRegister: async (req, res, next) => {
         try {
-            const schema = yup.object().shape({
-                firstName: yup
-                    .string()
-                    .max(100)
-                    .required(),
-                lastName: yup
-                    .string()
-                    .max(100)
-                    .required(),
-                email: yup
-                    .string()
-                    .email()
-                    .required(),
-                password: yup
-                    .string()
-                    .min(6)
-                    .required(),
-            });
-            try {
-                await schema.validate(req.body);
-            } catch (err) {
-                res.render('registerForm', {
+            const validate = await UserService.validateUserInput(req.body);
+            if (validate.name === 'ValidationError') {
+                return res.render('registerForm', {
                     title: 'Register',
                     user: req.body,
-                    errors: err.errors,
+                    errors: validate.errors,
                 });
-                return;
             }
+            const user = UserService.sanitizeUserInput(req.body);
 
-            const user = await User.findOne({
-                email: req.body.email.toLowerCase(),
-            }).exec();
-
-            if (!user) {
-                const salt = crypto.randomBytes(16).toString('base64');
-                const hash = crypto
-                    .createHmac('sha512', salt)
-                    .update(req.body.password)
-                    .digest('base64');
-                req.body.password = salt + '$' + hash;
-
-                const newUser = await User.create(req.body);
-                res.redirect(newUser.url);
+            const found = await UserService.findUserByEmail(req.body.email);
+            if (!found) {
+                const newUser = await UserService.createUser(user);
+                return res.redirect(newUser.url);
             } else {
-                res.render('registerForm', {
+                return res.render('registerForm', {
                     title: 'Register',
-                    user: req.body,
+                    user,
                     errors: ['Account already registered!'],
                 });
-                return;
             }
         } catch (err) {
             next(err);
@@ -92,14 +63,12 @@ module.exports = {
     },
 
     getDetails: async (req, res, next) => {
-        const id = mongoose.Types.ObjectId(req.params.id);
         try {
-            const user = await User.findById(id).exec();
+            const user = await UserService.getUser(req.params.id);
             if (!user) {
-                res.status(404).send('User not found!');
-                return;
+                return res.status(404).send('User not found!');
             }
-            res.render('userDetails', { title: 'User Details', user });
+            return res.render('userDetails', { title: 'User Details', user });
         } catch (err) {
             next(err);
         }
@@ -107,9 +76,8 @@ module.exports = {
 
     getUpdate: async (req, res, next) => {
         try {
-            const id = mongoose.Types.ObjectId(req.params.id);
-            const user = await User.findById(id).exec();
-            res.render('userDetails', {
+            const user = await UserService.getUser(req.params.id);
+            return res.render('userDetails', {
                 title: 'User Details',
                 user,
                 update: true,
