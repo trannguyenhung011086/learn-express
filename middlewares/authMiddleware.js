@@ -18,7 +18,8 @@ module.exports = {
     validateHeader: (req, res, next) => {
         const token = getTokenFromHeader(req);
         if (!token) {
-            return res.status(401).send('No token found!');
+            // return res.status(401).send('No token found!');
+            return res.redirect('/user/login');
         }
         try {
             jwt.verify(token, process.env.ACCESSTOKENSECRET);
@@ -28,10 +29,10 @@ module.exports = {
         return next();
     },
 
-    isLogin: (req, res, next) => {
+    isLoginRedirect: (req, res, next) => {
         const token = getTokenFromHeader(req);
-        if (!token) {
-            return res.redirect('/user');
+        if (token) {
+            return res.redirect('/catalog');
         }
         return next();
     },

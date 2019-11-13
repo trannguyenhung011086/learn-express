@@ -3,25 +3,63 @@ const router = express.Router();
 
 const userController = require('../controllers/userController');
 
+const authMiddleware = require('../middlewares/authMiddleware');
+
 router.get('/', userController.index);
 
-router.get('/register', userController.getRegister);
-router.post('/register', userController.postRegister);
+router.get(
+    '/register',
+    authMiddleware.isLoginRedirect,
+    userController.getRegister,
+);
+router.post(
+    '/register',
+    authMiddleware.isLoginRedirect,
+    userController.postRegister,
+);
 
-router.get('/login', userController.getLogin);
-router.post('/login', userController.postLogin);
+router.get('/login', authMiddleware.isLoginRedirect, userController.getLogin);
+router.post('/login', authMiddleware.isLoginRedirect, userController.postLogin);
 
-router.get('/forgotpassword', userController.getForgotPassword);
-router.post('/forgotpassword', userController.postForgotPassword);
+router.get(
+    '/forgotpassword',
+    authMiddleware.isLoginRedirect,
+    userController.getForgotPassword,
+);
+router.post(
+    '/forgotpassword',
+    authMiddleware.isLoginRedirect,
+    userController.postForgotPassword,
+);
 
-router.get('/:id', userController.getDetails);
+router.get('/:id', authMiddleware.validateHeader, userController.getDetails);
 
-router.post('/:id/logout', userController.postLogout);
+router.post(
+    '/:id/logout',
+    authMiddleware.validateHeader,
+    userController.postLogout,
+);
 
-router.get('/:id/update', userController.getUpdate);
-router.post('/:id/update', userController.postUpdate);
+router.get(
+    '/:id/update',
+    authMiddleware.validateHeader,
+    userController.getUpdate,
+);
+router.post(
+    '/:id/update',
+    authMiddleware.validateHeader,
+    userController.postUpdate,
+);
 
-router.get('/:id/delete', userController.getDelete);
-router.post('/:id/delete', userController.postDelete);
+router.get(
+    '/:id/delete',
+    authMiddleware.validateHeader,
+    userController.getDelete,
+);
+router.post(
+    '/:id/delete',
+    authMiddleware.validateHeader,
+    userController.postDelete,
+);
 
 module.exports = router;
