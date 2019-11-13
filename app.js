@@ -17,6 +17,8 @@ const indexRouter = require('./routes/index');
 const catalogRouter = require('./routes/catalog');
 const userRouter = require('./routes/user');
 
+const authMiddleware = require('./middlewares/authMiddleware');
+
 const app = express();
 
 // view engine setup
@@ -32,7 +34,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // handle routes
 app.use('/', indexRouter);
-app.use('/catalog', catalogRouter);
+app.use(
+    '/catalog',
+    authMiddleware.isLogin,
+    authMiddleware.validateHeader,
+    catalogRouter,
+);
 app.use('/user', userRouter);
 
 // catch 404 page

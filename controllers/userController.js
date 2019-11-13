@@ -1,12 +1,8 @@
-const crypto = require('crypto');
-const mongoose = require('mongoose');
-const yup = require('yup');
-const User = require('../models/user');
 const UserService = require('../services/userService');
+const config = require('../common/config');
 
 module.exports = {
     index: (req, res) => {
-        // check login session
         res.redirect('/user/login');
     },
 
@@ -26,7 +22,7 @@ module.exports = {
             }
             const user = UserService.sanitizeUserInput(req.body);
 
-            const found = await UserService.findUserByEmail(req.body.email);
+            const found = await UserService.findUserByEmail(user.email);
             if (!found) {
                 const newUser = await UserService.createUser(user);
                 return res.redirect(newUser.url);
@@ -46,8 +42,42 @@ module.exports = {
         res.render('loginForm', { title: 'Login', user: req.body });
     },
 
-    postLogin: (req, res) => {
-        res.send('TODO: post user login');
+    postLogin: async (req, res, next) => {
+        try {
+            const { password, firstName, lastName, email } = req.body;
+
+            const user = await UserService.findUserByEmail(email);
+            if (!user) {
+                return res.status(404).send('User not found!');
+            }
+
+            const checkPassword = await UserService.checkPasswordMatch(
+                password,
+                user,
+            );
+            if (checkPassword === false) {
+                return res.render('loginForm', {
+                    title: 'Login',
+                    user: req.body,
+                    errors: ['Invalid email or password!'],
+                });
+            }
+
+            const tokens = UserService.grantToken({
+                firstName,
+                lastName,
+                email,
+            });
+
+            res.cookie('accessToken', tokens.accessToken, {
+                maxAge: config.accessTokenLife * 1000,
+                httpOnly: true,
+            });
+            res.redirect('/catalog');
+            // res.status(200).json(tokens);
+        } catch (err) {
+            next(err);
+        }
     },
 
     postLogout: (req, res) => {
@@ -87,8 +117,31 @@ module.exports = {
         }
     },
 
-    postUpdate: (req, res) => {
-        res.send('TODO: post user update');
+    postUpdate: async (req, res, next) => {
+        try {
+            const validate = await UserService.validateUserInput(req.body);
+            if (validate.name === 'ValidationError') {
+                return res.render('registerForm', {
+                    title: 'Register',
+                    user: req.body,
+                    errors: validate.errors,
+                });
+            }
+            const user = UserService.sanitizeUserInput(req.body);
+
+            const found = await UserService.findUserByEmail(req.body.email);
+            if (found) {
+                const updatedUser = await UserService.updateUser(
+                    req.params.id,
+                    user,
+                );
+                return res.redirect(updatedUser.url);
+            } else {
+                return res.status(404).send('User not found!');
+            }
+        } catch (err) {
+            next(err);
+        }
     },
 
     getDelete: (req, res) => {

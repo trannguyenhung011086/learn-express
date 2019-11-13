@@ -4,7 +4,7 @@ const router = express.Router();
 /* GET home page. */
 router.get('/', (req, res) => {
     // check login session
-    res.redirect('/user');
+    res.redirect('/catalog');
 });
 
 module.exports = router;
