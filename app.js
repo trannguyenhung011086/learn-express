@@ -34,7 +34,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // handle routes
 app.use('/', indexRouter);
-app.use('/catalog', authMiddleware.validateHeader, catalogRouter);
+app.use(
+    '/catalog',
+    authMiddleware.validateHeader,
+    authMiddleware.refreshToken,
+    catalogRouter,
+);
 app.use('/user', userRouter);
 
 // catch 404 page

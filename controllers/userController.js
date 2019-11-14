@@ -44,7 +44,7 @@ module.exports = {
 
     postLogin: async (req, res, next) => {
         try {
-            const { password, firstName, lastName, email } = req.body;
+            const { password, email } = req.body;
 
             const user = await UserService.findUserByEmail(email);
             if (!user) {
@@ -65,11 +65,7 @@ module.exports = {
                 });
             }
 
-            const tokens = UserService.grantToken({
-                firstName,
-                lastName,
-                email,
-            });
+            const tokens = UserService.grantToken({ email });
 
             res.cookie('accessToken', tokens.accessToken, {
                 maxAge: config.accessTokenLife * 1000,
