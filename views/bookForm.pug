@@ -12,7 +12,7 @@ block content
       select#author.form-control(type='select', placeholder='Select author' name='author' required=true )
         - authors.sort(function(a, b) {let textA = a.lastName.toUpperCase(); let textB = b.lastName.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for author in authors
-          if book
+          if book.length > 0
             option(value=author._id selected=(author._id.toString()==book.author._id || author._id.toString()==book.author ? 'selected' : false) ) #{author.fullName}
           else
             option(value=author._id) #{author.fullName}

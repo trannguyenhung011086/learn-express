@@ -1,4 +1,3 @@
-const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -18,6 +17,7 @@ const catalogRouter = require('./routes/catalog');
 const userRouter = require('./routes/user');
 
 const authMiddleware = require('./middlewares/authMiddleware');
+const errorMiddleware = require('./middlewares/errorHandler');
 
 const app = express();
 
@@ -40,6 +40,11 @@ app.use('/user', userRouter);
 // catch 404 page
 app.use('*', (req, res) => {
     res.status(404).send('Page not found!');
+});
+
+// handle errors
+app.use((err, req, res, next) => {
+    errorMiddleware.createError(err, req, res);
 });
 
 module.exports = app;

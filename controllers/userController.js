@@ -48,7 +48,9 @@ module.exports = {
 
             const user = await UserService.findUserByEmail(email);
             if (!user) {
-                return res.status(404).send('User not found!');
+                const err = new Error('User not found!');
+                err.status = 404;
+                return next(err);
             }
 
             const checkPassword = await UserService.checkPasswordMatch(
@@ -96,7 +98,9 @@ module.exports = {
         try {
             const user = await UserService.getUser(req.params.id);
             if (!user) {
-                return res.status(404).send('User not found!');
+                const err = new Error('User not found!');
+                err.status = 404;
+                return next(err);
             }
             return res.render('userDetails', { title: 'User Details', user });
         } catch (err) {
@@ -137,7 +141,9 @@ module.exports = {
                 );
                 return res.redirect(updatedUser.url);
             } else {
-                return res.status(404).send('User not found!');
+                const err = new Error('User not found!');
+                err.status = 404;
+                return next(err);
             }
         } catch (err) {
             next(err);
