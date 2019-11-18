@@ -24,7 +24,7 @@ module.exports = {
             return res.redirect('/user/login');
         }
         try {
-            jwt.verify(token, process.env.ACCESSTOKENSECRET);
+            jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         } catch (err) {
             return res.status(400).send('Invalid token!');
         }
@@ -42,7 +42,7 @@ module.exports = {
     refreshToken: (req, res, next) => {
         const token = getTokenFromHeader(req);
         if (token) {
-            const payload = jwt.verify(token, process.env.ACCESSTOKENSECRET);
+            const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
             const nowUnixSeconds = Math.round(Number(new Date()) / 1000);
 
             if (payload.exp - nowUnixSeconds > 30) {

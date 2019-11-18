@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const yup = require('yup');
-const Book = require('../models/book');
-const Author = require('../models/author');
-const Genre = require('../models/genre');
-const BookInstance = require('../models/bookInstance');
+const Book = require('../models/bookModel');
+const Author = require('../models/authorModel');
+const Genre = require('../models/genreModel');
+const BookInstance = require('../models/bookInstanceModel');
 
 module.exports = {
     index: async (req, res) => {

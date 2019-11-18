@@ -21,18 +21,42 @@ module.exports = {
                 });
             }
             const user = UserService.sanitizeUserInput(req.body);
-
             const found = await UserService.findUserByEmail(user.email);
-            if (!found) {
-                const newUser = await UserService.createUser(user);
-                return res.redirect(newUser.url);
-            } else {
+
+            if (found) {
                 return res.render('registerForm', {
                     title: 'Register',
                     user,
                     errors: ['Account already registered!'],
                 });
             }
+
+            const active = UserService.generateActiveCode();
+            user.activeCode = active.activeCode;
+            user.activeCodeExpires = active.activeCodeExpires;
+
+            const newUser = await UserService.createUser(user);
+            return res.redirect('/user/login');
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    getActive: async (req, res, next) => {
+        try {
+            let user = await UserService.getUser(req.params.userId);
+            if (!user) {
+                return res.status(404).send('User not found!');
+            }
+
+            const activeCode = req.params.activeCode;
+            if (user.activeCode != activeCode.trim()) {
+                return res.status(400).send('Invalid active code!');
+            }
+
+            user.active = true;
+            await UserService.updateUser(user._id, user);
+            return res.redirect('/user/login');
         } catch (err) {
             next(err);
         }
@@ -48,12 +72,14 @@ module.exports = {
 
             const user = await UserService.findUserByEmail(email);
             if (!user) {
-                const err = new Error('User not found!');
-                err.status = 404;
-                return next(err);
+                return res.render('loginForm', {
+                    title: 'Login',
+                    user: req.body,
+                    errors: ['Account does not exist!'],
+                });
             }
 
-            const checkPassword = await UserService.checkPasswordMatch(
+            const checkPassword = UserService.checkPasswordMatch(
                 password,
                 user,
             );
@@ -62,6 +88,14 @@ module.exports = {
                     title: 'Login',
                     user: req.body,
                     errors: ['Invalid email or password!'],
+                });
+            }
+
+            if (!user.active) {
+                return res.render('loginForm', {
+                    title: 'Login',
+                    user: req.body,
+                    errors: ['Account is not activated!'],
                 });
             }
 

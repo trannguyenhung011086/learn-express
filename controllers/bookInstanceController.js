@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const yup = require('yup');
-const BookInstance = require('../models/bookInstance');
-const Book = require('../models/book');
+const BookInstance = require('../models/bookInstanceModel');
+const Book = require('../models/bookModel');
 
 module.exports = {
     getList: async (req, res, next) => {

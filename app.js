@@ -12,9 +12,9 @@ mongoose
     .then(() => console.log('Mongo connected!'))
     .catch(err => console.log(err));
 
-const indexRouter = require('./routes/index');
-const catalogRouter = require('./routes/catalog');
-const userRouter = require('./routes/user');
+const indexRouter = require('./routes/indexRoute');
+const catalogRouter = require('./routes/catalogRoute');
+const userRouter = require('./routes/userRoute');
 
 const authMiddleware = require('./middlewares/authMiddleware');
 const errorMiddleware = require('./middlewares/errorHandler');

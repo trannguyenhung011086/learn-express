@@ -3,7 +3,7 @@ const yup = require('yup');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const Utils = require('../common/utils');
-const User = require('../models/user');
+const User = require('../models/userModel');
 const config = require('../common/config');
 
 module.exports = {
@@ -55,13 +55,15 @@ module.exports = {
         return await User.findById(id).exec();
     },
 
-    updateUser: async (id, update) => {
-        id = mongoose.Types.ObjectId(id);
-        update.password = Utils.hashText(update.password);
-        return await User.findByIdAndUpdate(id, update).exec();
+    updateUser: async (userId, update) => {
+        userId = mongoose.Types.ObjectId(userId);
+        if (update.password && update.password.split('$')[0].length != 24) {
+            update.password = Utils.hashText(update.password);
+        }
+        return await User.findByIdAndUpdate(userId, update).exec();
     },
 
-    checkPasswordMatch: async (password, user) => {
+    checkPasswordMatch: (password, user) => {
         if (!password) return false;
         const passwordFields = user.password.split('$');
 
@@ -76,12 +78,18 @@ module.exports = {
     },
 
     grantToken: user => {
-        const accessToken = jwt.sign(user, process.env.ACCESSTOKENSECRET, {
+        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: config.accessTokenLife,
         });
-        const refreshToken = jwt.sign(user, process.env.REFRESHTOKENSECRET, {
+        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {
             expiresIn: config.refreshTokenLife,
         });
         return { accessToken, refreshToken };
+    },
+
+    generateActiveCode: () => {
+        const activeCode = crypto.randomBytes(20).toString('hex');
+        const activeCodeExpires = Date.now() + 24 * 3600 * 1000;
+        return { activeCode, activeCodeExpires };
     },
 };
