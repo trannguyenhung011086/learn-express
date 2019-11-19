@@ -119,8 +119,16 @@ module.exports = {
         }
     },
 
-    postLogout: (req, res) => {
-        res.send('TODO: post user logout');
+    postLogout: async (req, res, next) => {
+        try {
+            const logout = await UserService.revokeToken(req);
+            if (!logout) {
+                return res.status(500).send('Cannot log out!');
+            }
+            return res.redirect('/user/login');
+        } catch (err) {
+            next(err);
+        }
     },
 
     getForgotPassword: (req, res) => {

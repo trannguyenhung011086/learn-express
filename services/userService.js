@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const Utils = require('../common/utils');
 const User = require('../models/userModel');
 const config = require('../common/config');
+const redisClient = require('../redis');
 
 module.exports = {
     validateUserInput: async user => {
@@ -85,6 +86,11 @@ module.exports = {
             expiresIn: config.refreshTokenLife,
         });
         return { accessToken, refreshToken };
+    },
+
+    revokeToken: req => {
+        const token = Utils.getTokenFromHeader(req);
+        return redisClient.sadd('blacklistTokens', token);
     },
 
     generateActiveCode: () => {

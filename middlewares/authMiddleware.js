@@ -1,28 +1,25 @@
 const jwt = require('jsonwebtoken');
 const UserService = require('../services/userService');
 const config = require('../common/config');
-
-const getTokenFromHeader = req => {
-    let token = '';
-    if (
-        req.headers.authorization &&
-        req.headers.authorization.slit(' ')[0] === 'Bearer'
-    ) {
-        token = req.headers.authorization.slit(' ')[1];
-    }
-    if (!token && req.cookies.accessToken) {
-        token = req.cookies.accessToken;
-    }
-    return token;
-};
+const Utils = require('../common/utils');
+const redisClient = require('../redis');
 
 module.exports = {
-    validateHeader: (req, res, next) => {
-        const token = getTokenFromHeader(req);
+    validateHeader: async (req, res, next) => {
+        const token = Utils.getTokenFromHeader(req);
+
         if (!token) {
-            // return res.status(401).send('No token found!');
+            // return res.status(401).send('Unauthorized token!');
             return res.redirect('/user/login');
         }
+
+        redisClient.smembers('blacklistTokens', (err, result) => {
+            if (!token || (result && result.includes(token))) {
+                // return res.status(401).send('Unauthorized token!');
+                return res.redirect('/user/login');
+            }
+        });
+
         try {
             jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         } catch (err) {
@@ -32,7 +29,7 @@ module.exports = {
     },
 
     isLoginRedirect: (req, res, next) => {
-        const token = getTokenFromHeader(req);
+        const token = Utils.getTokenFromHeader(req);
         if (token) {
             return res.redirect('/catalog');
         }
@@ -40,7 +37,7 @@ module.exports = {
     },
 
     refreshToken: (req, res, next) => {
-        const token = getTokenFromHeader(req);
+        const token = Utils.getTokenFromHeader(req);
         if (token) {
             const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
             const nowUnixSeconds = Math.round(Number(new Date()) / 1000);

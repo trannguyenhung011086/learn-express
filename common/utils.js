@@ -30,4 +30,18 @@ module.exports = {
             console.log('Error with sending email', err);
         }
     },
+
+    getTokenFromHeader: req => {
+        let token = '';
+        if (
+            req.headers.authorization &&
+            req.headers.authorization.slit(' ')[0] === 'Bearer'
+        ) {
+            token = req.headers.authorization.slit(' ')[1];
+        }
+        if (!token && req.cookies.accessToken) {
+            token = req.cookies.accessToken;
+        }
+        return token;
+    },
 };

@@ -23,6 +23,8 @@ router.get('/active/:userId&:activeCode', userController.getActive);
 router.get('/login', authMiddleware.isLoginRedirect, userController.getLogin);
 router.post('/login', authMiddleware.isLoginRedirect, userController.postLogin);
 
+router.get('/logout', userController.postLogout);
+
 router.get(
     '/forgotpassword',
     authMiddleware.isLoginRedirect,

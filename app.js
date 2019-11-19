@@ -11,7 +11,7 @@ mongoose
         useFindAndModify: false,
     })
     .then(() => console.log('Mongo connected!'))
-    .catch(err => console.log(err));
+    .catch(err => console.log('Mongo not connected!', err));
 
 const indexRouter = require('./routes/indexRoute');
 const catalogRouter = require('./routes/catalogRoute');
