@@ -1,4 +1,6 @@
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const sgTransport = require('nodemailer-sendgrid-transport');
 
 module.exports = {
     hashText: text => {
@@ -12,4 +14,20 @@ module.exports = {
 
     escape: text =>
         text.replace(/[^0-9A-Za-z ]/g, c => '&#' + c.charCodeAt(0) + ';'),
+
+    sendEmail: async email => {
+        const options = {
+            auth: {
+                api_key: process.env.SENDGRID_KEY,
+            },
+        };
+        const mailer = nodemailer.createTransport(sgTransport(options));
+        try {
+            const send = await mailer.sendMail(email);
+            console.log('Mail sent', send);
+            return send;
+        } catch (err) {
+            console.log('Error with sending email', err);
+        }
+    },
 };

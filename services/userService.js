@@ -92,4 +92,15 @@ module.exports = {
         const activeCodeExpires = Date.now() + 24 * 3600 * 1000;
         return { activeCode, activeCodeExpires };
     },
+
+    sendActiveEmail: async ({ userName, userEmail, activeLink }) => {
+        const email = {
+            from: process.env.EMAIL,
+            to: userEmail,
+            subject: 'Activation Email',
+            text: `Hello ${userName}, please use the following link to activate your account: ${activeLink}`,
+            html: `Hello <b>${userName}</b>, please use the following link to activate your account: <a href="${activeLink}">here</a> to activate your account.`,
+        };
+        await Utils.sendEmail(email);
+    },
 };

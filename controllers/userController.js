@@ -36,6 +36,13 @@ module.exports = {
             user.activeCodeExpires = active.activeCodeExpires;
 
             const newUser = await UserService.createUser(user);
+
+            await UserService.sendActiveEmail({
+                userName: newUser.fullName,
+                userEmail: newUser.email,
+                activeLink: `${process.env.BASE_URL}/user/active/${newUser._id}&${newUser.activeCode}`,
+            });
+
             return res.redirect('/user/login');
         } catch (err) {
             next(err);
