@@ -121,10 +121,11 @@ module.exports = {
 
     postLogout: async (req, res, next) => {
         try {
-            const logout = await UserService.revokeToken(req);
-            if (!logout) {
-                return res.status(500).send('Cannot log out!');
-            }
+            await UserService.revokeToken(req);
+            res.cookie('accessToken', '', {
+                maxAge: 0,
+                overwrite: true,
+            });
             return res.redirect('/user/login');
         } catch (err) {
             next(err);

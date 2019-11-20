@@ -90,7 +90,9 @@ module.exports = {
 
     revokeToken: req => {
         const token = Utils.getTokenFromHeader(req);
-        return redisClient.sadd('blacklistTokens', token);
+        const { promisify } = require('util');
+        const saddAsync = promisify(redisClient.sadd).bind(redisClient);
+        saddAsync('blacklistTokens', token);
     },
 
     generateActiveCode: () => {

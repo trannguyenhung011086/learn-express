@@ -7,18 +7,17 @@ const redisClient = require('../redis');
 module.exports = {
     validateHeader: async (req, res, next) => {
         const token = Utils.getTokenFromHeader(req);
-
         if (!token) {
-            // return res.status(401).send('Unauthorized token!');
+            // return res.status(401).send('No token!');
             return res.redirect('/user/login');
         }
 
-        redisClient.smembers('blacklistTokens', (err, result) => {
-            if (!token || (result && result.includes(token))) {
-                // return res.status(401).send('Unauthorized token!');
-                return res.redirect('/user/login');
-            }
-        });
+        const { promisify } = require('util');
+        const smembersAsync = promisify(redisClient.smembers).bind(redisClient);
+        const blacklist = await smembersAsync('blacklistTokens');
+        if (blacklist.includes(token)) {
+            return res.status(401).send('Revoked token!');
+        }
 
         try {
             jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
