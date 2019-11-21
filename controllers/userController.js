@@ -62,6 +62,7 @@ module.exports = {
             }
 
             user.active = true;
+            user.role = 'user';
             await UserService.updateUser(user._id, user);
             return res.redirect('/user/login');
         } catch (err) {
@@ -75,7 +76,7 @@ module.exports = {
 
     postLogin: async (req, res, next) => {
         try {
-            const { password, email } = req.body;
+            const { password, email, role } = req.body;
 
             const user = await UserService.findUserByEmail(email);
             if (!user) {
@@ -106,11 +107,15 @@ module.exports = {
                 });
             }
 
-            const tokens = UserService.grantToken({ email });
+            const tokens = UserService.grantToken({
+                email,
+                role: role || 'user',
+            });
 
             res.cookie('accessToken', tokens.accessToken, {
                 maxAge: config.accessTokenLife * 1000,
                 httpOnly: true,
+                overwrite: true,
             });
             res.redirect('/catalog');
             // res.status(200).json(tokens);
@@ -124,6 +129,7 @@ module.exports = {
             await UserService.revokeToken(req);
             res.cookie('accessToken', '', {
                 maxAge: 0,
+                httpOnly: true,
                 overwrite: true,
             });
             return res.redirect('/user/login');
@@ -146,7 +152,7 @@ module.exports = {
             if (!user) {
                 const err = new Error('User not found!');
                 err.status = 404;
-                return next(err);
+                next(err);
             }
             return res.render('userDetails', { title: 'User Details', user });
         } catch (err) {
@@ -189,7 +195,7 @@ module.exports = {
             } else {
                 const err = new Error('User not found!');
                 err.status = 404;
-                return next(err);
+                next(err);
             }
         } catch (err) {
             next(err);

@@ -3,13 +3,21 @@ const UserService = require('../services/userService');
 const config = require('../common/config');
 const Utils = require('../common/utils');
 const redisClient = require('../redis');
+const allow = require('../common/roles');
 
 module.exports = {
-    validateHeader: async (req, res, next) => {
+    validateToken: async (req, res, next) => {
         const token = Utils.getTokenFromHeader(req);
         if (!token) {
             // return res.status(401).send('No token!');
             return res.redirect('/user/login');
+        }
+
+        try {
+            const verify = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            console.log(verify);
+        } catch (err) {
+            return res.status(400).send('Invalid token!');
         }
 
         const { promisify } = require('util');
@@ -18,11 +26,15 @@ module.exports = {
         if (blacklist.includes(token)) {
             return res.status(401).send('Revoked token!');
         }
+        return next();
+    },
 
-        try {
-            jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        } catch (err) {
-            return res.status(400).send('Invalid token!');
+    checkPermision: permission => (req, res, next) => {
+        const token = Utils.getTokenFromHeader(req);
+        const role = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET).role;
+
+        if (!allow(role, permission)) {
+            return res.status(403).send('Forbidden!');
         }
         return next();
     },

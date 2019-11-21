@@ -36,33 +36,33 @@ router.post(
     userController.postForgotPassword,
 );
 
-router.get('/:id', authMiddleware.validateHeader, userController.getDetails);
+router.get('/:id', authMiddleware.validateToken, userController.getDetails);
 
 router.post(
     '/:id/logout',
-    authMiddleware.validateHeader,
+    authMiddleware.validateToken,
     userController.postLogout,
 );
 
 router.get(
     '/:id/update',
-    authMiddleware.validateHeader,
+    authMiddleware.validateToken,
     userController.getUpdate,
 );
 router.post(
     '/:id/update',
-    authMiddleware.validateHeader,
+    authMiddleware.validateToken,
     userController.postUpdate,
 );
 
 router.get(
     '/:id/delete',
-    authMiddleware.validateHeader,
+    authMiddleware.validateToken,
     userController.getDelete,
 );
 router.post(
     '/:id/delete',
-    authMiddleware.validateHeader,
+    authMiddleware.validateToken,
     userController.postDelete,
 );
 

@@ -37,20 +37,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use(
     '/catalog',
-    authMiddleware.validateHeader,
+    authMiddleware.validateToken,
     authMiddleware.refreshToken,
     catalogRouter,
 );
 app.use('/user', userRouter);
 
 // catch 404 page
-app.use('*', (req, res) => {
-    res.status(404).send('Page not found!');
-});
+// app.use('*', (req, res) => {
+//     res.status(404).send('Page not found!');
+// });
 
 // handle errors
-app.use((err, req, res, next) => {
-    errorMiddleware.createError(err, req, res);
-});
+// app.use((err, req, res, next) => {
+//     errorMiddleware.createError(err, req, res, next);
+// });
 
 module.exports = app;

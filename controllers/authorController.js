@@ -9,7 +9,10 @@ module.exports = {
             const authorList = await Author.find({})
                 .sort([['firstName', 'ascending']])
                 .exec();
-            res.render('authorList', { title: 'Author List', authorList });
+            res.render('authorList', {
+                title: 'Author List',
+                authorList,
+            });
         } catch (err) {
             next(err);
         }
