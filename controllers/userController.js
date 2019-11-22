@@ -38,11 +38,14 @@ module.exports = {
 
             const newUser = await UserService.createUser(user);
 
-            emailSubscriber.emit('user-registered', {
+            const email = {
                 userName: newUser.fullName,
                 userEmail: newUser.email,
                 activeLink: `${config.baseUrl}/user/active/${newUser._id}&${newUser.activeCode}`,
-            });
+            };
+
+            // await UserService.sendActiveEmail(email);
+            emailSubscriber.emit('user-registered', email);
 
             return res.redirect('/user/login');
         } catch (err) {

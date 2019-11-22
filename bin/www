@@ -5,7 +5,9 @@
  */
 require('dotenv').config();
 const config = require('../common/config');
-const app = require('../app');
+const mongo = require('../loaders/mongo');
+const redis = require('../loaders/redis');
+const app = require('../loaders/express');
 const debug = require('debug')('learn-express:server');
 const http = require('http');
 

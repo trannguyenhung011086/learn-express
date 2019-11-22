@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const Utils = require('../common/utils');
 const User = require('../models/userModel');
 const config = require('../common/config');
-const redisClient = require('../redis');
+const redisClient = require('../loaders/redis');
 
 module.exports = {
     validateUserInput: async user => {

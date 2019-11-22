@@ -2,29 +2,18 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const mongoose = require('mongoose');
-const config = require('./common/config');
 
-mongoose
-    .connect(config.mongoDatabase, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false,
-    })
-    .then(() => console.log('Mongo connected!'))
-    .catch(err => console.log('Mongo not connected!', err));
+const indexRouter = require('../routes/indexRoute');
+const catalogRouter = require('../routes/catalogRoute');
+const userRouter = require('../routes/userRoute');
 
-const indexRouter = require('./routes/indexRoute');
-const catalogRouter = require('./routes/catalogRoute');
-const userRouter = require('./routes/userRoute');
-
-const authMiddleware = require('./middlewares/authMiddleware');
-const errorMiddleware = require('./middlewares/errorHandler');
+const authMiddleware = require('../middlewares/authMiddleware');
+const errorMiddleware = require('../middlewares/errorHandler');
 
 const app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.resolve(__dirname, '../views'));
 app.set('view engine', 'pug');
 
 // apply middleware

@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const UserService = require('../services/userService');
 const config = require('../common/config');
 const Utils = require('../common/utils');
-const redisClient = require('../redis');
+const redisClient = require('../loaders/redis');
 const allow = require('../common/roles');
 
 module.exports = {
