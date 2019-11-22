@@ -1,5 +1,6 @@
 const UserService = require('../services/userService');
 const config = require('../common/config');
+const emailSubscriber = require('../events/emailSubscriber');
 
 module.exports = {
     index: (req, res) => {
@@ -37,10 +38,10 @@ module.exports = {
 
             const newUser = await UserService.createUser(user);
 
-            await UserService.sendActiveEmail({
+            emailSubscriber.emit('user-registered', {
                 userName: newUser.fullName,
                 userEmail: newUser.email,
-                activeLink: `${process.env.BASE_URL}/user/active/${newUser._id}&${newUser.activeCode}`,
+                activeLink: `${config.baseUrl}/user/active/${newUser._id}&${newUser.activeCode}`,
             });
 
             return res.redirect('/user/login');

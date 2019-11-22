@@ -14,7 +14,7 @@ module.exports = {
         }
 
         try {
-            const verify = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            const verify = jwt.verify(token, config.accessTokenSecret);
             console.log(verify);
         } catch (err) {
             return res.status(400).send('Invalid token!');
@@ -31,7 +31,7 @@ module.exports = {
 
     checkPermision: permission => (req, res, next) => {
         const token = Utils.getTokenFromHeader(req);
-        const role = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET).role;
+        const role = jwt.verify(token, config.accessTokenSecret).role;
 
         if (!allow(role, permission)) {
             return res.status(403).send('Forbidden!');
@@ -50,7 +50,7 @@ module.exports = {
     refreshToken: (req, res, next) => {
         const token = Utils.getTokenFromHeader(req);
         if (token) {
-            const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            const payload = jwt.verify(token, config.accessTokenSecret);
             const nowUnixSeconds = Math.round(Number(new Date()) / 1000);
 
             if (payload.exp - nowUnixSeconds > 30) {

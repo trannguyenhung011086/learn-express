@@ -79,10 +79,10 @@ module.exports = {
     },
 
     grantToken: user => {
-        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        const accessToken = jwt.sign(user, config.accessTokenSecret, {
             expiresIn: config.accessTokenLife,
         });
-        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {
+        const refreshToken = jwt.sign(user, config.refreshTokenSecret, {
             expiresIn: config.refreshTokenLife,
         });
         return { accessToken, refreshToken };
@@ -103,7 +103,7 @@ module.exports = {
 
     sendActiveEmail: async ({ userName, userEmail, activeLink }) => {
         const email = {
-            from: process.env.EMAIL,
+            from: config.email,
             to: userEmail,
             subject: 'Activation Email',
             text: `Hello ${userName}, please use the following link to activate your account: ${activeLink}`,

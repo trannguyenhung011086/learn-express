@@ -3,9 +3,10 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
+const config = require('./common/config');
 
 mongoose
-    .connect(process.env.DATABASE, {
+    .connect(config.mongoDatabase, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false,
@@ -44,13 +45,13 @@ app.use(
 app.use('/user', userRouter);
 
 // catch 404 page
-// app.use('*', (req, res) => {
-//     res.status(404).send('Page not found!');
-// });
+app.use('*', (req, res) => {
+    res.status(404).send('Page not found!');
+});
 
 // handle errors
-// app.use((err, req, res, next) => {
-//     errorMiddleware.createError(err, req, res, next);
-// });
+app.use((err, req, res, next) => {
+    errorMiddleware.createError(err, req, res, next);
+});
 
 module.exports = app;
