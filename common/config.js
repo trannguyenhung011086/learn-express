@@ -11,4 +11,5 @@ module.exports = {
     email: process.env.EMAIL,
     baseUrl: process.env.BASE_URL,
     port: process.env.PORT || 3000,
+    serverless: process.env.SERVERLESS || 'off',
 };
