@@ -1,0 +1,25 @@
+{
+    "version": 2,
+    "name": "learn-express",
+    "builds": [{ "src": "index.js", "use": "@now/node-server" }],
+    "routes": [
+        {
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept"
+            },
+            "src": "/.*",
+            "dest": "index.js"
+        }
+    ],
+    "env": {
+        "MONGODB_URI": "@my-mongodb-uri",
+        "REDIS_URI": "@my-redis-uri",
+        "REDIS_PASSWORD": "@redis-password",
+        "ACCESS_TOKEN_SECRET": "@access-token",
+        "REFRESH_TOKEN_SECRET": "@refresh-token",
+        "SENDGRID_KEY": "@sendgrid",
+        "SERVERLESS": "off"
+    }
+}

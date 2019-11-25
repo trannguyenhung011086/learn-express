@@ -1,5 +1,3 @@
-const config = require('../common/config');
-const serverless = require('serverless-http');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -10,7 +8,7 @@ const catalogRouter = require('../routes/catalogRoute');
 const userRouter = require('../routes/userRoute');
 
 const authMiddleware = require('../middlewares/authMiddleware');
-const errorMiddleware = require('../middlewares/errorHandler');
+// const errorMiddleware = require('../middlewares/errorHandler');
 
 const app = express();
 
@@ -19,6 +17,7 @@ app.set('views', path.resolve(__dirname, '../views'));
 app.set('view engine', 'pug');
 
 // process query string
+const { URLSearchParams } = require('url');
 app.set('query parser', queryString => {
     return new URLSearchParams(queryString);
 });
@@ -39,31 +38,13 @@ app.use(
     catalogRouter,
 );
 app.use('/user', userRouter);
-
-// map routes to lambda functions
-app.use('/.netlify/functions/api/', indexRouter);
-app.use(
-    '/.netlify/functions/api/catalog',
-    authMiddleware.validateToken,
-    authMiddleware.refreshToken,
-    catalogRouter,
-);
-app.use('/.netlify/functions/api/user', userRouter);
-
-// catch 404 page
 app.use('*', (req, res) => {
     res.status(404).send('Page not found!');
 });
 
-app.use('/.netlify/functions/api/*', (req, res) => {
-    res.status(404).send('Page not found!');
-});
-
 // handle errors
-app.use((err, req, res, next) => {
-    errorMiddleware.createError(err, req, res, next);
-});
+// app.use((err, req, res, next) => {
+//     errorMiddleware.createError(err, req, res, next);
+// });
 
 module.exports = app;
-module.exports.handler = serverless(app);
-// if (config.serverless === 'on') module.exports.handler = serverless(app);
