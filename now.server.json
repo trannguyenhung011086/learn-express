@@ -1,13 +1,8 @@
 {
     "version": 2,
     "name": "learn-express",
-    "builds": [{ "src": "/api/*.js", "use": "@now/node" }],
-    "routes": [
-        { "src": "/catalog", "dest": "/api/catalog.js" },
-        { "src": "/catalog(/.*)", "dest": "/api/catalog.js" },
-        { "src": "/user(/.*)", "dest": "/api/user.js" },
-        { "src": "(/.*)", "dest": "/api/home.js" }
-    ],
+    "builds": [{ "src": "index.js", "use": "@now/node-server" }],
+    "routes": [{ "src": "(.*)", "dest": "index.js" }],
     "env": {
         "MONGODB_URI": "@my-mongodb-uri",
         "REDIS_URI": "@my-redis-uri",

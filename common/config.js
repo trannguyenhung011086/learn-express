@@ -13,5 +13,4 @@ module.exports = {
     email: process.env.EMAIL || 'learn-express@express.com',
     baseUrl: process.env.BASE_URL || 'http://localhost:4000',
     port: process.env.PORT || 3000,
-    serverless: process.env.SERVERLESS || 'off',
 };
