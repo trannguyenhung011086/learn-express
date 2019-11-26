@@ -10,15 +10,20 @@ Notes:
 
 -   Express JS for server
 -   Pug for template
+-   Sendgrid for sending emails
+-   Mongo Atlas for database
+-   Redis Labs for in-memory storage
+-   Bugsnag for monitoring errors
 -   Zeit Now for deployment
 
 ## How
 
 -   run `now login` to login Zeit
 -   for deploy as serverless functions, look at _api_ folder and copy content from `now.serverless.json` to `now.json`
+    -   notes: Now hosted functions are AWS lambda functions and has max limit of 10 seconds for executing
 -   for deploy as Express server, look at _index.js_ file and copy content from `now.server.json` to `now.json`
 -   add secrets to Zeit
-    - e.g. run `now secrets add my-mongodb-uri <mongo uri>` to add uri to mongo atlas db
+    -   e.g. run `now secrets add my-mongodb-uri <mongo uri>` to add uri to mongo atlas db
 -   run `now` to deploy to Zeit
 
 Check deployed site (e.g. https://learn-express.trannguyenhung011086.now.sh/)

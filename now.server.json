@@ -9,6 +9,7 @@
         "REDIS_PASSWORD": "@redis-password",
         "ACCESS_TOKEN_SECRET": "@access-token",
         "REFRESH_TOKEN_SECRET": "@refresh-token",
-        "SENDGRID_KEY": "@sendgrid"
+        "SENDGRID_KEY": "@sendgrid",
+        "BUGSNAG": "@bugsnag"
     }
 }
