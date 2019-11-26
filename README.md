@@ -15,8 +15,8 @@ Notes:
 ## How
 
 -   run `now login` to login Zeit
--   for deploy as serverless functions, look at _api_ folder and copy content from `now.server.json` to `now.json`
--   for deploy as Express server, look at _index.js_ file and copy content from `now.serverless.json` to `now.json`
+-   for deploy as serverless functions, look at _api_ folder and copy content from `now.serverless.json` to `now.json`
+-   for deploy as Express server, look at _index.js_ file and copy content from `now.server.json` to `now.json`
 -   add secrets to Zeit
     - e.g. run `now secrets add my-mongodb-uri <mongo uri>` to add uri to mongo atlas db
 -   run `now` to deploy to Zeit
