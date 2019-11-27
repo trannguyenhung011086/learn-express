@@ -3,10 +3,6 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const bugsnag = require('@bugsnag/js');
-const bugsnagExpress = require('@bugsnag/plugin-express');
-const bugsnagClient = bugsnag(config.bugsnag);
-bugsnagClient.use(bugsnagExpress);
 
 const indexRouter = require('../routes/indexRoute');
 const catalogRouter = require('../routes/catalogRoute');
@@ -29,6 +25,10 @@ app.set('query parser', queryString => {
 
 // apply middleware
 if (process.env.NODE_ENV === 'production') {
+    const bugsnag = require('@bugsnag/js');
+    const bugsnagExpress = require('@bugsnag/plugin-express');
+    const bugsnagClient = bugsnag(config.bugsnag);
+    bugsnagClient.use(bugsnagExpress);
     app.use(bugsnagClient.getPlugin('express').requestHandler);
 }
 app.use(logger('dev'));
