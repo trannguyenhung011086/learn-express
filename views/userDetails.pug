@@ -1,7 +1,8 @@
 extends layout
 
 block content
-  h1 User: #{user.fullName}
+  h1 #{title}
+  h2 User: #{user.fullName}
 
   if update
     form(method='POST' action='')
@@ -22,17 +23,12 @@ block content
   
   else
     div(style='margin-left:20px;margin-top:20px')
-
-      h4 Info
       
       p Email: #{user.email}
-      p Role: #{user.permissionLevel}
+      p Role: #{user.role}
 
       hr
       p 
         a(href=user.url + '/update') Update account
       p 
         a(href=user.url + '/delete') Delete account
-
-      form(method='POST' action=user.url + '/logout')
-        button.btn.btn-primary(type='submit') Logout

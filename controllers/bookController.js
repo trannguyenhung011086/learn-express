@@ -6,7 +6,9 @@ const Genre = require('../models/genreModel');
 const BookInstance = require('../models/bookInstanceModel');
 
 module.exports = {
-    index: require('./homeController'),
+    index: (req, res) => {
+        res.redirect('/');
+    },
     getList: async (req, res, next) => {
         try {
             const bookList = await Book.find({})

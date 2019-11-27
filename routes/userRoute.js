@@ -39,8 +39,6 @@ router.post(
 router.get('/reset/:id', userController.getResetPassword);
 router.post('/reset/:id', userController.postResetPassword);
 
-router.get('/:id', authMiddleware.validateToken, userController.getDetails);
-
 router.post(
     '/:id/logout',
     authMiddleware.validateToken,
@@ -61,12 +59,16 @@ router.post(
 router.get(
     '/:id/delete',
     authMiddleware.validateToken,
+    authMiddleware.checkPermision('all:delete'),
     userController.getDelete,
 );
 router.post(
     '/:id/delete',
     authMiddleware.validateToken,
+    authMiddleware.checkPermision('all:delete'),
     userController.postDelete,
 );
+
+router.get('/:id', authMiddleware.validateToken, userController.getDetails);
 
 module.exports = router;

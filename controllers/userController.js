@@ -4,7 +4,7 @@ const emailSubscriber = require('../events/emailSubscriber');
 
 module.exports = {
     index: (req, res) => {
-        res.redirect('/user/login');
+        res.redirect('/');
     },
 
     getRegister: (req, res) => {
@@ -119,7 +119,7 @@ module.exports = {
                 httpOnly: true,
                 overwrite: true,
             });
-            res.redirect('/catalog');
+            res.redirect(`/user/${user._id}`);
             // res.status(200).json(tokens);
         } catch (err) {
             next(err);
@@ -239,7 +239,7 @@ module.exports = {
                 err.status = 404;
                 next(err);
             }
-            return res.render('userDetails', { title: 'User Details', user });
+            return res.render('userDetails', { title: 'Profile', user });
         } catch (err) {
             next(err);
         }
