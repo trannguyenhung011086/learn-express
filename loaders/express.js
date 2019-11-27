@@ -28,7 +28,9 @@ app.set('query parser', queryString => {
 });
 
 // apply middleware
-app.use(bugsnagClient.getPlugin('express').requestHandler);
+if (process.env.NODE_ENV === 'production') {
+    app.use(bugsnagClient.getPlugin('express').requestHandler);
+}
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

@@ -1,4 +1,3 @@
-require('dotenv').config();
 const config = require('./common/config');
 const mongo = require('./loaders/mongo');
 const redis = require('./loaders/redis');

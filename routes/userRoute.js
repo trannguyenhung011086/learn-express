@@ -36,6 +36,9 @@ router.post(
     userController.postForgotPassword,
 );
 
+router.get('/reset/:id', userController.getResetPassword);
+router.post('/reset/:id', userController.postResetPassword);
+
 router.get('/:id', authMiddleware.validateToken, userController.getDetails);
 
 router.post(

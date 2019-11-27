@@ -5,7 +5,12 @@ const UserService = require('../services/userService');
 
 myEmitter.on(
     'user-registered',
-    async user => await UserService.sendActiveEmail(user),
+    async emailData => await UserService.sendActiveEmail(emailData),
+);
+
+myEmitter.on(
+    'reset-password',
+    async emailData => await UserService.sendResetEmail(emailData),
 );
 
 module.exports = myEmitter;

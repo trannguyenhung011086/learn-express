@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "start": "node index.js",
-        "dev": "DEBUG=learn-express:* nodemon index.js"
+        "dev": "NODE_ENV=development DEBUG=learn-express:* nodemon index.js"
     },
     "dependencies": {
         "@bugsnag/js": "^6.4.3",

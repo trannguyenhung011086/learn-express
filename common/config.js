@@ -11,7 +11,10 @@ module.exports = {
     redisPassword: process.env.REDIS_PASSWORD,
     sendgridKey: process.env.SENDGRID_KEY,
     email: process.env.EMAIL || 'learn-express@express.com',
-    baseUrl: process.env.BASE_URL || 'http://localhost:4000',
+    baseUrl:
+        process.env.BASE_URL && process.env.NODE_ENV === 'production'
+            ? process.env.BASE_URL
+            : `http://localhost:${process.env.PORT || 3000}`,
     port: process.env.PORT || 3000,
     bugsnag: process.env.BUGSNAG,
 };

@@ -38,14 +38,12 @@ module.exports = {
 
             const newUser = await UserService.createUser(user);
 
-            const email = {
+            const emailData = {
                 userName: newUser.fullName,
                 userEmail: newUser.email,
                 activeLink: `${config.baseUrl}/user/active/${newUser._id}&${newUser.activeCode}`,
             };
-
-            // await UserService.sendActiveEmail(email);
-            emailSubscriber.emit('user-registered', email);
+            emailSubscriber.emit('user-registered', emailData);
 
             return res.redirect('/user/login');
         } catch (err) {
@@ -142,12 +140,95 @@ module.exports = {
         }
     },
 
-    getForgotPassword: (req, res) => {
-        res.send('TODO: get user forgot password');
+    getForgotPassword: async (req, res, next) => {
+        try {
+            return res.render('forgotForm', { title: 'Forgot Password' });
+        } catch (err) {
+            next(err);
+        }
     },
 
-    postForgotPassword: (req, res) => {
-        res.send('TODO: post user forgot password');
+    postForgotPassword: async (req, res, next) => {
+        try {
+            const { email } = req.body;
+            const user = await UserService.findUserByEmail(email);
+            if (!user) {
+                return res.render('forgotForm', {
+                    title: 'Forgot Password',
+                    errors: ['Email does not exist!'],
+                });
+            }
+
+            const active = UserService.generateActiveCode();
+            user.activeCode = active.activeCode;
+            user.activeCodeExpires = active.activeCodeExpires;
+
+            const emailData = {
+                userName: user.fullName,
+                userEmail: user.email,
+                activeLink: `${config.baseUrl}/user/reset/${user._id}&${user.activeCode}`,
+            };
+            emailSubscriber.emit('reset-password', emailData);
+
+            return res.render('forgotForm', {
+                title: 'Forgot Password',
+                successMessage:
+                    'Please check your email for reset password link!',
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    getResetPassword: async (req, res, next) => {
+        try {
+            const userId = req.params.id.split('&')[0];
+            const user = await UserService.getUser(userId);
+            if (!user) {
+                return res.status(404).send('User not found!');
+            }
+
+            return res.render('resetForm', { title: 'Reset Password' });
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    postResetPassword: async (req, res, next) => {
+        try {
+            const userId = req.params.id.split('&')[0];
+            const user = await UserService.getUser(userId);
+            if (!user) {
+                return res.status(404).send('User not found!');
+            }
+
+            let { password, confirmPassword } = req.body;
+
+            const validate = await UserService.sanitizePassword(password);
+            if (validate.name === 'ValidationError') {
+                return res.render('resetForm', {
+                    title: 'Reset Password',
+                    password,
+                    confirmPassword,
+                    errors: validate.errors,
+                });
+            }
+
+            if (password != confirmPassword) {
+                return res.render('resetForm', {
+                    title: 'Reset Password',
+                    password,
+                    confirmPassword,
+                    errors: ['Confirm password does not match!'],
+                });
+            }
+
+            user.password = confirmPassword;
+            await UserService.updateUser(user._id, user);
+            return res.redirect('/user/login');
+        } catch (err) {
+            next(err);
+        }
     },
 
     getDetails: async (req, res, next) => {

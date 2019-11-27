@@ -39,6 +39,14 @@ module.exports = {
         };
     },
 
+    sanitizePassword: async password => {
+        const schema = yup
+            .string()
+            .min(6)
+            .required();
+        return await schema.validate(password).catch(err => err);
+    },
+
     findUserByEmail: async email => {
         if (!email) return false;
         return await User.findOne({
@@ -52,6 +60,7 @@ module.exports = {
     },
 
     getUser: async id => {
+        if (/[0-9a-zA-Z]{24}/.test(id) === false) return null;
         id = mongoose.Types.ObjectId(id);
         return await User.findById(id).exec();
     },
@@ -108,6 +117,17 @@ module.exports = {
             subject: 'Activation Email',
             text: `Hello ${userName}, please use the following link to activate your account: ${activeLink}`,
             html: `Hello <b>${userName}</b>, please use the following link to activate your account: <a href="${activeLink}">here</a> to activate your account.`,
+        };
+        await Utils.sendEmail(email);
+    },
+
+    sendResetEmail: async ({ userName, userEmail, activeLink }) => {
+        const email = {
+            from: config.email,
+            to: userEmail,
+            subject: 'Reset Password Email',
+            text: `Hello ${userName}, please use the following link to reset your password: ${activeLink}`,
+            html: `Hello <b>${userName}</b>, please use the following link to reset your password: <a href="${activeLink}">here</a> to activate your account.`,
         };
         await Utils.sendEmail(email);
     },
