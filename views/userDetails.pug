@@ -3,7 +3,7 @@ extends layout
 block content
   h1 #{title}
   h2 User: #{user.fullName}
-
+  hr
   if update
     form(method='POST' action='')
       div.form-group
@@ -16,6 +16,15 @@ block content
         label(for='password') Password:
         input#password.form-control(type='password' placeholder='Password' name='password' required=true value=user.password )
       button.btn.btn-primary(type='submit') Submit
+    
+    hr
+    - var url = `/user/${user._id}/update/avatar`
+    form(method='POST' action=`${url}` enctype='multipart/form-data')
+      div.form-group
+        label(for='avatar') Avatar:
+        input#avatar.form-control(type='file' placeholder='avatar' name='avatar')
+      button.btn.btn-primary(type='submit') Submit
+    
     if errors 
       ul
         each error in errors

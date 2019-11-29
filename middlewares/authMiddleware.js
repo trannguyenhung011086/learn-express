@@ -14,8 +14,7 @@ module.exports = {
         }
 
         try {
-            const verify = jwt.verify(token, config.accessTokenSecret);
-            console.log(verify);
+            jwt.verify(token, config.accessTokenSecret);
         } catch (err) {
             return res.status(400).send('Invalid token!');
         }

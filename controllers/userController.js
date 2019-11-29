@@ -249,7 +249,7 @@ module.exports = {
         try {
             const user = await UserService.getUser(req.params.id);
             return res.render('userDetails', {
-                title: 'User Details',
+                title: 'Profile',
                 user,
                 update: true,
             });
@@ -263,7 +263,7 @@ module.exports = {
             const validate = await UserService.validateUserInput(req.body);
             if (validate.name === 'ValidationError') {
                 return res.render('registerForm', {
-                    title: 'Register',
+                    title: 'Profile',
                     user: req.body,
                     errors: validate.errors,
                 });
@@ -271,17 +271,25 @@ module.exports = {
             const user = UserService.sanitizeUserInput(req.body);
 
             const found = await UserService.findUserByEmail(req.body.email);
-            if (found) {
-                const updatedUser = await UserService.updateUser(
-                    req.params.id,
-                    user,
-                );
-                return res.redirect(updatedUser.url);
-            } else {
+            if (!found) {
                 const err = new Error('User not found!');
                 err.status = 404;
                 next(err);
             }
+
+            const updatedUser = await UserService.updateUser(
+                req.params.id,
+                user,
+            );
+            return res.redirect(updatedUser.url);
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    postUpdateAvatar: (req, res, next) => {
+        try {
+            UserService.uploadAvatar(req, res, next);
         } catch (err) {
             next(err);
         }

@@ -51,9 +51,9 @@ router.get(
     userController.getUpdate,
 );
 router.post(
-    '/:id/update',
+    '/:id/update/avatar',
     authMiddleware.validateToken,
-    userController.postUpdate,
+    userController.postUpdateAvatar,
 );
 
 router.get(

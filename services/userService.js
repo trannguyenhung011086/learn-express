@@ -2,9 +2,13 @@ const mongoose = require('mongoose');
 const yup = require('yup');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const path = require('path');
+const fs = require('fs');
+const multiparty = require('multiparty');
+
 const Utils = require('../common/utils');
-const User = require('../models/userModel');
 const config = require('../common/config');
+const User = require('../models/userModel');
 const redisClient = require('../loaders/redis');
 
 module.exports = {
@@ -130,5 +134,40 @@ module.exports = {
             html: `Hello <b>${userName}</b>, please use the following link to reset your password: <a href="${activeLink}">here</a> to activate your account.`,
         };
         await Utils.sendEmail(email);
+    },
+
+    uploadAvatar: (req, res, next) => {
+        const form = new multiparty.Form();
+
+        form.on('part', part => {
+            part.on('error', err => next(err));
+            if (!part.headers['content-type'].match('image')) {
+                return next(Error('File is not image!'));
+            } else {
+                // upload to cloud logic
+            }
+        });
+
+        form.on('file', (name, file) => {
+            console.log(file);
+            if (!file.headers['content-type'].match('image')) {
+                return next(Error('File is not image!'));
+            } else {
+                res.redirect(`/user/${req.params.id}`);
+                fs.copyFile(
+                    file.path,
+                    path.resolve(
+                        __dirname,
+                        '../public/images/',
+                        file.originalFilename,
+                    ),
+                    err => {
+                        if (err) return next(err);
+                    },
+                );
+            }
+        });
+        form.on('error', err => next(err));
+        form.parse(req);
     },
 };
