@@ -24,7 +24,7 @@
         "nodemailer-sendgrid-transport": "^0.2.0",
         "pug": "2.0.4",
         "redis": "^2.8.0",
-        "serverless-http": "^2.3.0",
+        "serverless-http": "^2.7.0",
         "yup": "^0.27.0"
     },
     "devDependencies": {
